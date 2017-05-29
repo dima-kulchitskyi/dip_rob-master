@@ -1,0 +1,26 @@
+﻿@using NewsWebSite.Models.ViewModel
+@model EditEmailModel
+@{
+    Layout = "~/Views/Shared/Lay.cshtml";
+    ViewBag.Title = "EditEmail";
+}
+<div class="row " style="margin:10px 0;padding:20px;">
+    @using (Html.BeginForm("EditEmail", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "col l6 m10 s12 white z-depth-1 offset-l3 offset-m1", role = "form", style = "padding:30px;" }))
+    {
+        <div class="row">
+            <div class="input-field col s12">
+                @Html.EditorFor(model => model.Email)
+                @Html.LabelFor(model => model.Email)
+                @Html.ValidationMessageFor(model => model.Email)
+            </div>
+         </div>
+        <div class="row">
+            @Html.ValidationSummary(true, "", new { @class = "red-text" })
+            <div class="input-field col s12">
+                <input type="submit" class="waves-effect waves-light btn" value="Сохранить" style="margin-bottom:20px;" /><br />
+                @Html.ActionLink("Отмена", "Index")
+            </div>
+        </div>
+    }
+    </div>
+

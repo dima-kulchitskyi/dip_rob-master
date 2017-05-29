@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" auto-import="true" assembly="NewsWebSite" namespace="NewsWebSite.Models">
+  <class name="Notification" dynamic-update="true" >
+    <cache usage="read-write"/>
+    <id name="Id" type="int">
+      <generator class="native" />
+    </id>
+    <property name="Message" />
+    <property name="CommentId" />
+    <property name="UserId" />
+    <property name="Viewed" />
+    <property name="ArticleId" />
+    <property name="FromWho" />
+  </class>
+</hibernate-mapping>

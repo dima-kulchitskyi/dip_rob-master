@@ -1,0 +1,93 @@
+﻿@using NewsWebSite.Models.ViewModel
+@model CreateArticleModel
+@{
+    Layout = "~/Views/Shared/Lay.cshtml";
+}
+<div class="row white z-depth-1" style="margin:10px 0;padding:20px;">
+    @using (Html.BeginForm("CreateArticle", "News", FormMethod.Post, new
+    {
+        @id = "postForm",
+        @class = "col s12 l12 m12 news-form",
+        enctype = "multipart/form-data"
+    }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="row">
+            <div class="input-field col s12">
+                <p>Заголовок:</p>
+                @Html.EditorFor(model => model.Title, new { htmlAttributes = new { @data_length = 150 } })
+                @Html.ValidationMessageFor(model => model.Title)
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s12">
+                <p>Короткий опис:</p>
+                @Html.EditorFor(model => model.ShortDescription, new { htmlAttributes = new { @data_length = 250 } })
+                @Html.ValidationMessageFor(model => model.ShortDescription)
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s12">
+                <p>Текст:</p>
+                @Html.EditorFor(model => model.FullDescription)
+                @Html.ValidationMessageFor(model => model.FullDescription)
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="input-field col s12">
+                <img src="" style="max-height:200px;" id="img-preview" />
+                <p>Зображення:</p>
+                @Html.TextBoxFor(model => model.Image, new { type = "file", accept = "image/jpeg,image/png,.jpg,.png", id = "files" })
+                @Html.ValidationMessageFor(model => model.Image)
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s12">
+                <p>Теги:</p>
+                @TagListHelper.TagsList(Model.AllTags)
+                @Html.ValidationMessage("tags")
+            </div>
+        </div>
+            <div class="row">
+                <div class="input-field col s12">
+                    <input type="submit" class="waves-effect waves-light btn blue-grey lighten-1" value="Опублікувати" name="accept" required>
+                    <a href="@Url.Action("Index")" class="waves-effect waves-light btn blue-grey lighten-1">Відмінити</a>
+                </div>
+            </div>
+
+    }
+</div>
+@section scripts {
+    @Scripts.Render("~/ckeditor/ckeditor.js")
+    <script>
+        CKEDITOR.replace('FullDescription');
+
+
+    </script>
+    <script type="text/javascript">
+        function showFile(e) {
+            var files = e.target.files;
+            for (var i = 0, f; f = files[i]; i++) {
+                if (!f.type.match('image/*')) continue;
+                var fr = new FileReader();
+                fr.onload = (function (theFile) {
+                    return function (e) {
+                        document.getElementById('img-preview').src = e.target.result;
+                    };
+                })(f);
+
+                fr.readAsDataURL(f);
+            }
+        }
+
+        document.getElementById('files').addEventListener('change', showFile, false);
+
+    </script>
+    <script>
+        $('select').select2({
+            tags: true
+        });
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -1,0 +1,115 @@
+@using NewsUa.Models.ViewModel
+@using System.Configuration
+@model ArticleForView
+@{
+    Layout = "~/Views/Shared/Lay.cshtml";
+}
+<article id="articledata" data-curuserid="@Model.CurUserId" data-maxlen="@ViewBag.MaxCommentLength" data-articleid="@Model.Id" data-myname="@Model.CurUserName" data-image="@Model.CurUserImage" data-commentid="@Model.CommentId">
+    <div class="row">
+        <div class="col s12 m12 l12">
+            <div class="card">
+                @if (Model.Image != "Empty")
+                {
+                    <div class="card-image">
+
+                        <img src="@Url.Content(ConfigurationManager.AppSettings["ArticleImagesFolder"] + Model.Id + "/" + Model.Image)" alt="SRC">
+                        <span class="card-title">@Model.Title</span>
+                    </div>
+                }
+                else
+                {
+                        <span class="card-title" style="color:black">@Model.Title</span>
+                        <div class="divider"></div>
+                }
+                @if (Model.Editable)
+                {
+                    <a href="@Url.Action("EditArticle", new { Id = Model.Id })" class="btn blue-grey lighten-1" style="margin-top:15px;margin-left:15px"><i class="material-icons">edit</i></a>
+                                <a href="@Url.Action("Delete", new { Id = Model.Id })" class="btn blue-grey lighten-1" style="margin-top:15px;margin-left:15px"><i class="material-icons">delete</i></a>
+                }
+                <div class="card-content">
+                    <p>
+                        @Html.Raw(Model.FullDescription)
+                    </p>
+                </div>
+                <div class="card-action">
+                    <div id="#tags_list_menu">
+                        @foreach (var tag in Model.ArticleTags)
+                        {
+                            <div class="chip">
+                                @tag.TagText
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</article>
+<div class="commentsBlock col l12 m12 s12" id="CommentsBlock">
+    @if (User.Identity.IsAuthenticated)
+    {
+        <div class="sendBlock hidden white col z-depth-1 l12 s12 m12" id="sendBlock" style="padding:20px">
+            <textarea name="message" id="message"></textarea>
+            <p class="validComment red-text" style="display: none"></p>
+            <input type="button" class="waves-effect waves-light btn blue-grey lighten-1" value="Відправити" id="send" />
+        </div>
+    }
+    <div id="comments" class="comments white col z-depth-1 l12 s12 m12" style="padding:20px;">
+        <div id="loaderBlock">
+            <div id="loader" class="hidden">
+                <div class="preloader-wrapper big active">
+                    <div class="spinner-layer spinner-blue-only">
+                        <div class="circle-clipper left">
+                            <div class="circle"></div>
+                        </div><div class="gap-patch">
+                            <div class="circle"></div>
+                        </div><div class="circle-clipper right">
+                            <div class="circle"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts {
+    @Scripts.Render("~/bundles/articlePage")
+    <script type="text/template" id="template">
+        <div class="comment" id="[Id]" userid="[userId]" style="padding-left: 8px; border-left: 1px solid #D3D3D3">
+            <div class="contentComment">
+                <div class="NameImage">
+                    <img src="@Url.Content("~/Content/UserImages")/[Image]" style="width:35px; height: 35px;" />
+                    <h5 class="commentName blue-text" style="display: inline-block; bottom: 10px;  position: relative;">[Name]</h5>
+                </div>
+
+                <p class="commentDate blue-grey-text" style="margin-bottom:10px;">[Date]</p>
+                <p class="commentText staticCommentText">[Text]</p>
+                <textarea class="commentText editor hidden white" contenteditable="true"></textarea>
+                <p class="validEdit red-text" style="display: none"></p>
+            </div>
+            @if (Model.CurUserId > 0)
+            {
+                <div class="buttonsBlock" commentid="[Id]">
+                    <input type="button" value="Reply" class="showSendBlock hidegroup waves-effect waves-light btn-flat blue-text" />
+                    <input type="button" value="Edit" class="hidegroup waves-effect waves-light btn-flat blue-text [Class] editButton" />
+                    <input type="button" value="Save" class="waves-effect waves-light btn-flat blue-text saveButton hidden" />
+                    <input type="button" value="Delete" class="hidegroup waves-effect waves-light btn-flat [Class] blue-text deleteButton" />
+                    <div class="sendBlock hidden">
+                        <div class="divider"></div>
+                        <textarea name="message" class="messageTextBox" id="message-[Id]"></textarea>
+                        <p class="validComment red-text" style="display: none"></p>
+                        <input type="button" class="replyBtn waves-effect waves-light btn" value="Send" />
+                    </div>
+                </div>
+            }
+            <div class="lineloaderplace"></div>
+            <div class="divider" style="margin:10px 0"></div>
+            <div class="replyBlock"></div>
+        </div>
+    </script>
+    <script>
+        $('select').select2({
+            tags: true
+        });
+    </script>
+}

@@ -1,0 +1,56 @@
+﻿@model NewsWebSite.Models.ViewModel.UserViewModel
+
+@{
+    Layout = "~/Views/Shared/Lay.cshtml";
+    ViewBag.Title = Model.UserName.Split('@');
+}
+
+<div class="row" style="margin:10px 0;padding:20px;">
+    <div class="col s12 m12 l12 white z-depth-1">
+        <h2 class="header">@Model.UserName.Split('@')[0]</h2>
+        <div class="card horizontal">
+            <div class="card-image">
+                @if (Model.ImageName != "Default")
+                {
+                    <img src="@Url.Content("~/Content/UserImages/" + Model.Id + "/" + Model.ImageName)"  style="max-width:200px;max-height:200px">
+                }
+                else
+                {
+                    <img src="@Url.Content("~/Content/UserImages/profile.png")"  style="max-width:200px;max-height:200px">
+                }
+            </div>
+            <div class="card-stacked">
+                <div class="card-content">
+                    <p><a href="@Url.Action("EditEmail", "Account")">Сменить Email</a></p>
+                    <p><a href="@Url.Action("EditPassword", "Account")">Сменить пароль</a></p>
+                    <p><a href="@Url.Action("EditTags", "Account")">Редактировать тэги</a></p>
+                </div>
+                <div class="card-action">
+                    @TagListHelper.DisabledModelTagsList(Model.UserTags)
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    @*<div class="user-information">
+        <div class="img">
+        </div>
+        <span class="user-name">@Model.UserName.Split('@')[0]</span>
+        <div class="tags">
+            <h3>Мои теги:</h3>
+            <form action="/Account/SaveOrUpdateUserTags" method="post">
+                @TagListHelper.SelectedTagsList(Model.UserTags, Model.AllTags)
+                <input type="submit" value="СОХРАНИТЬ" id="save-tag" />
+            </form>
+        </div>
+    </div>*@
+    @section scripts{
+        <script>
+            $('select').select2({
+                tags: true
+            });
+        </script>
+    }
+
+

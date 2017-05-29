@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" auto-import="true" assembly="NewsWebSite" namespace="NewsWebSite.Models">
+  <class name="AppUser" dynamic-update="true" table="Users">
+    <cache usage="read-write"/>
+    <id name="Id" column="UserId" type="int">
+      <generator class="native" />
+    </id>
+    <property name="UserName" />
+   <!-- <property name="Email" />-->
+    <property name="Password" />
+    <property name="Image" />
+    <property name="AccessFailedCount" />
+    <property name="LockoutEnabled" />
+    <property name="lockoutEnd" />
+    <set name="Tags" table="Tag_User"  lazy="false">
+      <key column="UserId"/>
+      <many-to-many class="Tag" column="TagId" />
+    </set>
+  </class>
+</hibernate-mapping>

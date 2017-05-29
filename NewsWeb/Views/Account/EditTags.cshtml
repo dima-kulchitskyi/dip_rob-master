@@ -1,0 +1,29 @@
+﻿@model NewsWebSite.Models.ViewModel.EditTagsModel
+
+@{
+    Layout = "~/Views/Shared/Lay.cshtml";
+    ViewBag.Title = "EditTags";
+}
+<div class="row " style="margin:10px 0;padding:20px;">
+    @using (Html.BeginForm("EditTags", "Account", FormMethod.Post, new { @class = "col l6 m10 s12 white z-depth-1 offset-l3 offset-m1", enctype = "multipart/form-data", style = "padding:30px;" }))
+    {
+        <div class="row">
+            <div class="input-field col s12">
+                @TagListHelper.SelectedTagsList(Model.UserTags, Model.AllTags)
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s12">
+                <input type="submit" class="waves-effect waves-light btn" value="Сохранить" style="margin-bottom:15px;"/><br />
+                <a href="@Url.Action("Index", "Account")">Отмена</a><br />
+            </div>
+        </div>
+    }
+</div>
+@section scripts{
+    <script>
+            $('select').select2({
+                tags: true
+            });
+    </script>
+}

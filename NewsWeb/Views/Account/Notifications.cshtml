@@ -1,0 +1,21 @@
+﻿@using NewsWebSite.Models
+@model IList<Notification>
+@{
+    Layout = "~/Views/Shared/Lay.cshtml";
+}
+
+<h2>Notifications</h2>
+<div class="row" style="margin:10px 0;padding:20px;">
+    <div class="col s12 m12 l12 white z-depth-1">
+        <div style="margin:10px 0"></div>
+        @foreach (var notification in Model)
+        {
+            <div class="notifiItem@(!notification.Viewed? " notViewed" : "")">
+                <h5><b>@notification.FromWho</b> @(notification.CommentId == 0 ? "прокоментировал вашу новость." : "ответил на ваш комментарий.")</h5>
+                <p>@notification.Message</p>
+                <a href="@Url.Action("Article", "News", new { Id = notification.ArticleId, notifiId = notification.Id })" class="btn">Посмотреть</a>
+            </div>
+            <div class="divider" style="margin:10px 0"></div>
+        }
+    </div>
+</div>

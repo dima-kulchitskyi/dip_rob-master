@@ -1,0 +1,44 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    @Styles.Render("~/Content/Style.css")
+    @Styles.Render("~/Content/icon.css")
+    @Styles.Render("~/Content/Materialize.css")
+    @Styles.Render("~/Content/selectStyle.css")
+    @Styles.Render("~/Content/scroll.css")
+    @*@Styles.Render("~/bundles/defaultStyles")*@
+
+    <title> News Portal</title>
+
+    <style>
+        body {
+            background-color: white;
+        }
+
+        .grid-item {
+            float: left;
+            width: 450px;
+        }
+
+        strong {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col l12 m12 s12">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+    @Scripts.Render("~/bundles/default")
+    @Scripts.Render("~/signalr/hubs")
+    @RenderSection("scripts", required: false)
+    @Scripts.Render("~/Scripts/HubConnect.js")
+    @Scripts.Render("~/bundles/formPost")
+</body>
+</html>

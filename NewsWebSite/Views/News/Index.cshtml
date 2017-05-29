@@ -1,0 +1,84 @@
+﻿@using NewsUa.Models.ViewModel
+@using System.Configuration
+@model ArticleListModel
+@{
+    Layout = "~/Views/Shared/Lay.cshtml";
+}
+<articlelist id="dataArticleList" data-pagecnt="@Model.ArticleList.PageCount" data-showbytags="@Model.Type" data-lastid="@(Model.ArticleList.Count > 0 ? Model.ArticleList[Model.ArticleList.Count - 1].Id : 0)">
+    <div class="row" id="news_panel">
+        <div id="grid">
+            @foreach (var article in Model.ArticleList)
+            {
+                <div class="col s12 m12 l12 grid-item">
+                    <h4 class="article-header"><a id="Title-@article.Id" href="@Url.Action("Article", new { Title = article.Title, Id = article.Id })">@article.Title</a></h4>
+                    <div class="card horizontal z-depth-5">
+                        @if (article.Image != "Empty")
+                        {
+                            <div class="card-image">
+                                <img src="@Url.Content(ConfigurationManager.AppSettings["ArticleImagesFolder"] + article.Id.ToString() +"/"+ article.Image)" class="responsive-img news-img-item">
+                            </div>
+                        }
+                        <div class="card-stacked">
+                            <div class="card-content">
+                                <p>@article.ShortDescription</p>
+                            </div>
+                            <div class="card-action">
+                                <a href="@Url.Action("Article", new { Title = article.Title, Id = article.Id })">Детальніше</a>
+                                <div class="chip" style="float:right">
+                                    <i class="date material-icons">today</i>
+                                    @article.LastUpdateDate.ToString("yyyy-MM-dd H:mm:ss")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <div id="loaderBlock">
+            <div id="loader" class="hidden">
+                <div class="preloader-wrapper big active">
+                    <div class="spinner-layer spinner-blue-only">
+                        <div class="circle-clipper left">
+                            <div class="circle"></div>
+                        </div><div class="gap-patch">
+                            <div class="circle"></div>
+                        </div><div class="circle-clipper right">
+                            <div class="circle"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</articlelist>
+@section scripts {
+    @Scripts.Render("~/Scripts/masonry.pkgd.min.js")
+    @Scripts.Render("~/bundles/newsList")
+    <script type="text/template" id="imageTempl">
+        <div class="card-image">
+            <img src="@{Url.Content(ConfigurationManager.AppSettings["ArticleImagesFolder"]);}[Id]/[Image]" class="responsive-img news-img-item">
+        </div>
+    </script>
+    <script type="text/template" id="placeholderTemplate">
+    </script>
+    <script type="text/template" id="template">
+        <div class="col s12 m12 l12 grid-item">
+            <h4 class="article-header"><a id="Title-[Id]" href="@Url.Action("Article")/[Id]">[Title]</a></h4>
+            <div class="card horizontal z-depth-5">
+                [ImagePlaceholder]
+                <div class="card-stacked">
+                    <div class="card-content">
+                        <p>[ShortDescription]</p>
+                    </div>
+                    <div class="card-action">
+                        <a  href="@Url.Action("Article")/[Id]" id="More-[Id]">Детальніше</a>
+                        <div class="chip" style="float:right">
+                            <i class="date material-icons">today</i>
+                            [Date]
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+}

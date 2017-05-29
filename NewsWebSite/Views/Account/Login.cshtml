@@ -1,0 +1,43 @@
+﻿@using NewsUa.Models.ViewModel
+@model LoginViewModel
+@{
+    Layout = "~/Views/Shared/_N_Layout.cshtml";
+    ViewBag.Title = "Вхід";
+}
+<div class="row " style="margin:10px 0;padding:20px;">
+    @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new
+    {
+        @id = "postForm",
+        @class = "col l6 m10 s12 white z-depth-5 offset-l3 offset-m1",
+        role = "form",
+        style = "padding:30px;"
+    }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="row">
+            <div class="input-field col s12">
+                @Html.LabelFor(m => m.Email, new { @class = "label-text" })
+                @Html.TextBoxFor(m => m.Email)
+                @Html.ValidationMessageFor(m => m.Email)
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s12">
+                @Html.LabelFor(m => m.Password, new { @class = "label-text" })
+                @Html.PasswordFor(m => m.Password)
+                @Html.ValidationMessageFor(m => m.Password)
+            </div>
+        </div>
+        @Html.ValidationSummary(true, "", new { @class = "red-text" })
+
+        <div class="row">
+            <div class="input-field col s12">
+                <input type="submit" class="waves-effect waves-light btn blue-grey lighten-1" value="Увійти" name="accept" style="margin-bottom:20px;" /><br />
+                @Html.ActionLink("Зареєструватися", "Register")<br />
+            </div>
+        </div>
+    }
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

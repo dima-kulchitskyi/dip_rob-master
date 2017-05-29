@@ -1,0 +1,102 @@
+﻿@using NewsWebSite.Models.Repository
+@using Microsoft.AspNet.Identity
+@{ 
+    var NotifiCnt = (new NotifiCountCache()).GetValue(User.Identity.GetUserId<int>());
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    @Styles.Render("~/Content/Style.css")
+    @Styles.Render("//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/css/select2.min.css")
+    @Styles.Render("http://fonts.googleapis.com/icon?family=Material+Icons")
+    @Styles.Render("~/Content/materialize.min.css")
+    <title>News Portal</title>
+    <style>
+        body {
+            background-color: #cfd8dc;
+        }
+
+        .grid-item {
+            float: left;
+            width: 450px;
+        }
+        strong{
+            font-weight:bold;   
+        }
+
+      .card-content > p{
+            list-style-type: circle !important;
+        }
+
+      /*.select2-selection__choice ul > li{
+            list-style-type: none !important;
+        }*/
+
+
+    </style>
+
+</head>
+<body>
+        <ul id="dropdown1" class="dropdown-content">
+            <li><a href="@Url.Action("Index", "Account")">Профиль</a></li>
+            <li><a href="@Url.Action("CreateArticle", "News")">Создать новость</a></li>
+            <li><a href="@Url.Action("Index", "News", new { isInterestingNews = true })">Интерестные новости</a></li>
+            <li><a href="@Url.Action("Index", "News", new { isUserNews = true })">Мои новости</a></li>
+            <li class="divider"></li>
+            <li><a href="@Url.Action("LogOff", "Account")">Выйти</a></li>
+        </ul>
+    <nav class="blue-grey darken-3">
+        <div class="nav-wrapper">
+            <a href="#!" class="brand-logo">NewsPortal</a>
+            <ul class="right hide-on-med-and-down">
+                <li><a href="@Url.Action("Index", "News")">Главная</a></li>
+                
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <li><a href="@Url.Action("Notifications", "Account")">Мои Ответы(<span id="nCnt">@NotifiCnt</span>)</a></li>
+                    <li><a class="dropdown-button" href="#!" data-activates="dropdown1">@User.Identity.Name.Split('@')[0]<i class="material-icons right">arrow_drop_down</i></a></li>
+                }
+                else
+                {
+                    <li><a id="loged-button" href="@Url.Action("LogIn", "Account", new { returnUrl = Request.RawUrl })">Войти</a></li>
+                }
+            </ul>
+        </div>
+    </nav>
+    <div class="container col s12 ">
+        @RenderBody()
+    </div>
+
+
+    @Scripts.Render("~/Scripts/jquery-3.1.1.js")
+    @Scripts.Render("~/Scripts/jquery.unobtrusive-ajax.js")
+    @Scripts.Render("//cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/js/materialize.min.js");
+    @Scripts.Render("~/Scripts/jquery.signalR-2.2.1.min.js")
+    @Scripts.Render("~/signalr/hubs")
+    @Scripts.Render("//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/select2.min.js")
+    @Scripts.Render("~/Scripts/materialize.min.js")
+    <script>
+        $(document).ready(function () {
+     //      $(".button-collapse").sideNav();
+       //     $(".dropdown-button").dropdown();
+        })
+    </script>
+    <script type="text/javascript">
+        var connected = false;
+        var hub = $.connection.commentsHub;
+        $.connection.hub.start().done(function () {
+            connected = true;
+        });
+        hub.client.notify = function (commentId, fromWho, message, articleId) {
+            var cntItem = $('#nCnt');
+            var number = parseInt($(cntItem).text(), 10);
+            number = number + 1;
+            cntItem.text(number);
+            Materialize.toast(fromWho + ': ' + message, 5000);
+        }
+    </script>
+    @RenderSection("scripts", required: false)
+  
+</body>
+</html>

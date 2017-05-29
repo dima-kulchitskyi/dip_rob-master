@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" auto-import="true" assembly="NewsWebSite" namespace="NewsWebSite.Models">
+  <class name="Article" dynamic-update="true" >
+    <cache usage="read-write"/>
+    <id name="Id" column="ArticleId" type="int">
+      <generator class="native" />
+    </id>
+    <property name="Title" />
+    <property name="FullDescription" type="string" length="10000"/>
+    <property name="ShortDescription" type="string"/>
+    <property name="Image" />
+    <property name="CreateDate" />
+    <property name="LastUpdateDate" />
+    <property name="UserId" />
+    <property name="Url" />
+    <set name="Tags" table="Tag_Article"  lazy="false">
+      <key column="ArticleId"/>
+      <many-to-many class="Tag" column="TagId" />
+    </set>
+  </class>
+  
+</hibernate-mapping>

@@ -1,0 +1,169 @@
+﻿@using NewsUa.Models.Services
+@using Microsoft.AspNet.Identity
+@{
+	var NotifiCnt = NotificationsCountService.Instance.GetValue(User.Identity.GetUserId<int>());
+}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta http-equiv="x-ua-compatible" content="ie=edge">
+
+	<title>Material Design Bootstrap</title>
+
+	<!-- Font Awesome -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.0/css/font-awesome.min.css">
+
+	<!-- Bootstrap core CSS -->
+	<link href="~/Content/bootstrap.min.css" rel="stylesheet">
+
+	<!-- Material Design Bootstrap -->
+	<link href="~/Content/mdb.min.css" rel="stylesheet">
+
+	<link href="~/Content/Style.css" rel="stylesheet">
+	@Styles.Render("~/Content/icon.css")
+	@Styles.Render("~/Content/Materialize.css")
+	@Styles.Render("~/Content/selectStyle.css")
+	@Styles.Render("~/Content/scroll.css")
+
+	<!-- Template styles -->
+	<style rel="stylesheet">
+		/* TEMPLATE STYLES */
+
+		main {
+			padding-top: 3rem;
+			padding-bottom: 2rem;
+		}
+
+		.widget-wrapper {
+			padding-bottom: 2rem;
+			border-bottom: 1px solid #e0e0e0;
+			margin-bottom: 2rem;
+		}
+
+
+		.navbar {
+			background-color: #53463d;
+		}
+
+		footer.page-footer {
+			background-color: #53463d;
+			margin-top: 2rem;
+		}
+	</style>
+
+</head>
+
+<body>
+
+
+	<header>
+
+		<!--Navbar-->
+		<nav class="navbar navbar-toggleable-md navbar-dark">
+			<div class="container">
+				<button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarNav1" aria-controls="navbarNav1" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<a class="navbar-brand" href="@Url.Action("Index", "News")">
+					<strong>news.ua</strong>
+				</a>
+				<div class="collapse navbar-collapse" id="navbarNav1">
+					<ul class="navbar-nav mr-auto">
+						<li class="nav-item">
+							<a class="nav-link" href="@Url.Action("Index", "News")">Головнa</a>
+						</li>
+					</ul>
+					<form class="form-inline waves-effect waves-light">
+						<input class="form-control" type="text" placeholder="Search">
+					</form>
+				</div>
+			</div>
+		</nav>
+		<!--/.Navbar-->
+
+	</header>
+
+	<main>
+
+		<!--Main layout-->
+		<div class="container">
+			<div class="row">
+				<!--Sidebar-->
+				<div class="col-lg-4">
+					@if (User.Identity.IsAuthenticated)
+					{
+						<div class="widget-wrapper wow fadeIn" data-wow-delay="0.4s">
+							<h4>Меню:</h4>
+							<br>
+							<div class="list-group">
+								<a href="@Url.Action("Notifications", "Account")" class="list-group-item">Мої відповіді<span class="counter">@NotifiCnt</span></a>
+								<a href="@Url.Action("Index", "Account")" class="list-group-item">Перегляд профілю</a>
+								<a href="@Url.Action("CreateArticle", "News")" class="list-group-item">Створити новину</a>
+								<a href="@Url.Action("Index", "News", new { isInterestingNews = true })" class="list-group-item">Цікаві новини</a>
+								<a href="@Url.Action("Index", "News", new { isUserNews = true })" class="list-group-item">Мої новини</a>
+								<a href="@Url.Action("LogOff", "Account")" class="list-group-item">Вийти</a>
+							</div>
+						</div>
+					}
+					else
+					{
+						<div class="widget-wrapper wow fadeIn" data-wow-delay="0.6s">
+							<h4>Форма входу:</h4>
+							<br>
+							<div class="card">
+								<div class="card-block">
+									<div class="md-form">
+										<i class="fa fa-user prefix"></i>
+										<input type="text" id="form1" class="form-control">
+										<label for="form1">Your name</label>
+									</div>
+									<div class="md-form">
+										<i class="fa fa-envelope prefix"></i>
+										<input type="text" id="form2" class="form-control">
+										<label for="form2">Your email</label>
+									</div>
+									<button class="btn btn-info">Submit</button>
+								</div>
+							</div>
+						</div>
+					}
+				</div>
+				<div class="col-lg-8">
+					@RenderBody();
+				</div>
+				<!--/.Sidebar-->
+			</div>
+		</div>
+		<!--/.Main layout-->
+
+	</main>
+
+	<!--/.Footer-->
+	<!-- SCRIPTS -->
+	<!-- JQuery -->
+	<script type="text/javascript" src="~/Scripts/jquery-3.1.1.min.js"></script>
+
+	<!-- Bootstrap tooltips -->
+	<script type="text/javascript" src="~/Scripts/tether.js"></script>
+
+	<!-- Bootstrap core JavaScript -->
+	<script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+
+	<!-- MDB core JavaScript -->
+	<script type="text/javascript" src="~/Scripts/mdb.min.js"></script>
+	@Scripts.Render("~/bundles/default")
+	@Scripts.Render("~/signalr/hubs")
+	@RenderSection("scripts", required: false)
+	@Scripts.Render("~/Scripts/HubConnect.js")
+	@Scripts.Render("~/bundles/formPost")
+	<script>
+		new WOW().init();
+	</script>
+
+</body>
+
+</html>

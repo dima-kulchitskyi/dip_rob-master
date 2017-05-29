@@ -1,0 +1,45 @@
+﻿@helper SelectedTagsList(ISet<NewsUa.Models.Tag> selectedTag, IEnumerable<NewsUa.Models.Tag> allTag)
+{
+    <select name="tags" multiple="multiple" style="width:100%">
+        @if (allTag != null)
+        {
+            foreach (var tag in allTag)
+            {
+                if (selectedTag.Select(m => m.Id).Contains(tag.Id))
+                {
+                    <option value="@tag.TagText" selected>@tag.TagText</option>
+                }
+                else
+                {
+                    <option value="@tag.TagText">@tag.TagText</option>
+                }
+            }
+        }
+    </select>
+}
+@helper DisabledModelTagsList(ISet<NewsUa.Models.Tag> articleTag)
+{
+    <select name="tags" multiple="multiple" style="width:100%" disabled>
+        @if (articleTag != null)
+        {
+            foreach (var tag in articleTag)
+            {
+                <option value="@tag.TagText" selected>@tag.TagText</option>
+            }
+        }
+    </select>
+}
+@helper TagsList(IEnumerable<NewsUa.Models.Tag> allTag)
+{
+
+
+    <select name="tags" multiple="multiple" style="width:100%">
+        @if (allTag != null)
+        {
+            foreach (var tag in allTag)
+            {
+                <option value="@tag.TagText">@tag.TagText</option>
+            }
+        }
+    </select>
+}

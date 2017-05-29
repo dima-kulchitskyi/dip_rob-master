@@ -1,0 +1,133 @@
+﻿@using NewsWebSite.Models.ViewModel
+@model EditArticleModel
+@{
+    Layout = "~/Views/Shared/Lay.cshtml";
+}
+<div class="row white z-depth-1" style="margin:10px 0;padding:20px;">
+    @using (Html.BeginForm("EditArticle", "News", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+
+        <div class="row">
+            <div class="input-field col s12">
+                @Html.EditorFor(model => model.Id)
+                @Html.LabelFor(model => model.Title, new { @class = "label-text" })
+                @Html.EditorFor(model => model.Title)
+                @Html.ValidationMessageFor(model => model.Title)
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s12">
+                @Html.LabelFor(model => model.ShortDescription, new { @class = "label-text" })
+                @Html.EditorFor(model => model.ShortDescription)
+                @Html.ValidationMessageFor(model => model.ShortDescription)
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s12">
+                @Html.LabelFor(model => model.FullDescription, new { @class = "label-text" })
+                @Html.EditorFor(model => model.FullDescription)
+                @Html.ValidationMessageFor(model => model.FullDescription)
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s12">
+                <p>Изображение</p>
+                @if (Model.ImagePath != "Empty")
+                {
+                    <img src="@Url.Content("~/Content/ArticlImages/")@Model.Id/@Model.ImagePath" style="max-height:200px;" id="img-preview" /><br />
+                    <input type="hidden" name="imageCondition" value="Full" id="imageCondition" />
+                    <button type="button" class="waves-effect waves-light btn" id="reset-img-preview" style="margin:15px 0;">Удалить изображение</button><br />
+                }
+                else
+                {
+                    <img src="" style="max-height:200px;" id="img-preview" /><br />
+                    <input type="hidden" name="imageCondition" value="Empty" id="imageCondition" />
+                    <button type="button" class="waves-effect waves-light btn hidden" id="reset-img-preview" style="margin:15px 0;">Удалить изображение</button><br />
+                }
+
+                @Html.TextBoxFor(model => model.Image, new { type = "file", accept = "image/jpeg,image/png,.jpg,.png", id = "files" })
+                @Html.ValidationMessageFor(model => model.Image)
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s12">
+                <p>Тэги</p>
+                @TagListHelper.SelectedTagsList(Model.ArticleTags, Model.AllTags)
+            </div>
+        </div>
+
+        <input type="submit" value="СОХРАНИТЬ" name="accept" class="waves-effect waves-light btn">
+        <a href="@Url.Action("Article", new { Id = Model.Id })" class="waves-effect waves-light btn">ОТМЕНИТЬ</a>
+    }
+</div>
+@section scripts {
+    @Scripts.Render("~/ckeditor/ckeditor.js")
+    <script>
+        CKEDITOR.replace('FullDescription');
+    </script>
+    <script>
+        function DisplayButton() {
+            if (document.getElementById('img-preview').src == '') {
+                document.getElementById('reset-img-preview').setAttribute('class', 'hidden');
+            }
+        }
+        document.addEventListener('load', DisplayButton, false);
+    </script>
+    <script>
+        function ClearImg() {
+            document.getElementById('img-preview').src = '';
+            document.getElementById('files').value = '';
+            document.getElementById('reset-img-preview').setAttribute('class', 'hidden');
+            document.getElementById('imageCondition').setAttribute('value', 'Empty');
+        }
+        document.getElementById('reset-img-preview').addEventListener('click', ClearImg, false);
+    </script>
+    <script type="text/javascript">
+        function showFile(e) {
+            var files = e.target.files;
+            for (var i = 0, f; f = files[i]; i++) {
+                if (!f.type.match('image/*')) continue;
+                var fr = new FileReader();
+                fr.onload = (function (theFile) {
+                    return function (e) {
+                        document.getElementById('img-preview').src = e.target.result;
+                    };
+                })(f);
+
+                fr.readAsDataURL(f);
+            }
+            document.getElementById('reset-img-preview').removeAttribute('class', 'hidden');
+            document.getElementById('reset-img-preview').setAttribute('class', 'waves-effect waves-light btn');
+            document.getElementById('imageCondition').setAttribute('value', 'Full');
+        }
+
+        document.getElementById('files').addEventListener('change', showFile, false);
+    </script>
+    <script>
+        $('select').select2({
+            tags: true
+        });
+    </script>
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryval")
+}
+@*@Html.ValidationSummary()*@
+@*  <form method="post" enctype="multipart/form-data">
+        <div><img src="~/Content/UserImages/@Model.Id/@Model.Image" class="EditImg" alt="IMG"></div>
+        <table>
+            <input type="hidden" name="Id" value="@Model.Id"  />
+            <tr><td><label for="Title">Заголовок:</label></td><td><input type="text" value="@Model.Title" name="Title" id="Title"></td>
+            @Html.ValidationMessage("Title")
+            </tr>
+            <tr><td colspan="2"><label for="FD" class="label_left">Главный текст новости:<br><textarea name="FullDescription" id="FD" >@Model.FullDescription</textarea></label></td>
+            @Html.ValidationMessage("FullDescription")
+            </tr>
+            <tr>
+                <td><label for="IMG">Загрузить изображение:</label></td>
+                <td><input type="file" name="loadfile" id="IMG" value="@Model.Image" accept="jpg,png,gif"></td>
+                @Html.ValidationMessage("ImageUpload")
+            </tr>
+            <tr><td></td><td><input type="submit" value="Обновить"></td></tr>
+        </table>
+    </form>
+*@

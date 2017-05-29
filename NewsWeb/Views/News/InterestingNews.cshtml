@@ -1,0 +1,53 @@
+﻿@using NewsWebSite.Models.ViewModel
+@model List<ArticleForView>
+@{
+    Layout = "~/Views/Shared/Lay.cshtml";
+}
+<div class="row" id="news_panel">
+    <div id="grid">
+        @foreach (ArticleForView a in Model)
+        {
+            <div class="col l6 m6 s12 grid-item">
+                <div class="card hoverable" style="padding:5px;">
+                    @if (a.Image != "Empty")
+                    {
+                        <div class="card-image waves-effect waves-block waves-light">
+                            <a id="Title-@a" href="@Url.Action("Article", new { Id = a.Id })">
+                                <img class="activator" src="@Url.Content("~/Content/ArticlImages/")@a.Id/@a.Image" style="max-height:250px; min-height:250px; object-fit:cover; object-position:center">
+                            </a>
+                        </div>
+                    }
+                    <div class="card-content">
+                        <span class="card-title activator grey-text text-darken-4 truncate">@a.Title<i class="material-icons right">more_vert</i></span>
+                        <p><a href="@Url.Action("Article", new { Id = a.Id })" id="More-@a.Id">Подробнее</a></p>
+                    </div>
+                    <div class="card-reveal">
+                        <span class="card-title grey-text text-darken-4 truncate">@a.Title<i class="material-icons right">close</i></span>
+                        <p>@a.ShortDescription</p>
+                        <div class="divider"></div>
+                        <p title="@a.CreateDate.ToString("yyyy-MM-dd H:mm:ss")">@a.UpdateDate.ToString("yyyy-MM-dd H:mm:ss")</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+@section scripts {
+    <script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
+
+    <script type="text/javascript">
+  $(document).ready(function(){
+	$('#grid').masonry({
+	  itemSelector: '.grid-item',
+      singleMode: true,
+	  isResizable: true,
+	  isAnimated: true,
+      animationOptions: {
+	      queue: false,
+	      duration: 500
+	  }
+	});
+  });
+    </script>
+    }
+

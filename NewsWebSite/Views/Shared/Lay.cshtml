@@ -1,0 +1,102 @@
+﻿@using NewsUa.Models.Services
+@using Microsoft.AspNet.Identity
+@{
+    var NotifiCnt = NotificationsCountService.Instance.GetValue(User.Identity.GetUserId<int>());
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    @Styles.Render("~/Content/Style.css")
+    @Styles.Render("~/Content/icon.css")
+    @Styles.Render("~/Content/Materialize.css")
+    @Styles.Render("~/Content/selectStyle.css")
+    @Styles.Render("~/Content/scroll.css")
+    @*@Styles.Render("~/bundles/defaultStyles")*@
+
+    <title> News Portal</title>
+
+    <style>
+        body {
+            background-color: #f5f5f5;
+        }
+
+        .grid-item {
+            float: left;
+            width: 450px;
+        }
+
+        strong {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <ul id="dropdown1" class="dropdown-content">
+        <li><a href="@Url.Action("Index", "Account")">Прфіль</a></li>
+        <li><a href="@Url.Action("CreateArticle", "News")">Створити новину</a></li>
+        <li><a href="@Url.Action("Index", "News", new { isInterestingNews = true })">Цікаві новини</a></li>
+        <li><a href="@Url.Action("Index", "News", new { isUserNews = true })">Мої новини</a></li>
+        <li class="divider"></li>
+        <li><a href="@Url.Action("LogOff", "Account")">Вийти</a></li>
+    </ul>
+    <ul id="dropdown2" class="dropdown-content">
+        <li><a href="@Url.Action("EditEmail", "Account")">Змінити Email</a></li>
+        <li><a href="@Url.Action("EditPassword", "Account")">Змінити пароль</a></li>
+        <li><a href="@Url.Action("EditTags", "Account")">Редагувати теги</a></li>
+    </ul>
+    <nav class="blue-grey lighten-1">
+        <div class="nav-wrapper">
+            <a href="@Url.Action("Index", "News")" class="brand-logo" style="margin-left:20px">news.ua</a>
+            <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
+            <ul class="side-nav" id="mobile-demo">
+                <li><a href="@Url.Action("Index", "News")">Головна</a></li>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <li><a href="@Url.Action("Notifications", "Account")">Мої відповіді(<span class="nCnt">@NotifiCnt</span>)</a></li>
+                    <li><a class="dropdown-button" href="#!" data-activates="dropdown1">@User.Identity.Name.Split('@')[0]<i class="material-icons right">arrow_drop_down</i></a></li>
+                }
+                else
+                {
+                    <li><a id="loged-button" href="@Url.Action("LogIn", "Account", new { returnUrl = Request.RawUrl })">Увійти</a></li>
+                }
+            </ul>
+        </div>
+    </nav>
+    <div class="row">
+        <div class="col l8 m12 s12">
+            @RenderBody()
+        </div>
+        <div class="col l4 m12 s12 hide-on-med-and-down">
+            <div class="row">
+                <div class="row">
+                    <div class="card">
+                        <div class="collection">
+                            <a href="@Url.Action("Index", "News")" class="collection-item">Головна</a>
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <a href="@Url.Action("Notifications", "Account")" class="collection-item">Мої відповіді(<span class="nCnt">@NotifiCnt</span>)</a>
+                                <a class="dropdown-button collection-item" href="#!" data-activates="dropdown2">Профіль<i class="material-icons right">arrow_drop_down</i></a>
+                                <a href="@Url.Action("CreateArticle", "News")" class="collection-item">Створити новину</a>
+                                <a href="@Url.Action("Index", "News", new { isInterestingNews = true })" class="collection-item">Цікаві новини</a>
+                                <a href="@Url.Action("Index", "News", new { isUserNews = true })" class="collection-item">Мої новини</a>
+                                <a href="@Url.Action("LogOff", "Account")" class="collection-item">Вийти</a>
+                            }
+                            else
+                            {
+                                <a id="loged-button" href="@Url.Action("LogIn", "Account", new { returnUrl = Request.RawUrl })" class="collection-item">Увійти</a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @Scripts.Render("~/bundles/default")
+    @Scripts.Render("~/signalr/hubs")
+    @RenderSection("scripts", required: false)
+    @Scripts.Render("~/Scripts/HubConnect.js")
+    @Scripts.Render("~/bundles/formPost")
+</body>
+</html>

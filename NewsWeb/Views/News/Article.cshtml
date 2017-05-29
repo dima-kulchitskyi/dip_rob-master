@@ -1,0 +1,318 @@
+@using NewsWebSite.Models.ViewModel;
+@model ArticleForView
+@{
+    Layout = "~/Views/Shared/Lay.cshtml";
+}
+<div class="row">
+    <div class="col s12 m12 l12">
+        <div class="card z-depth-1">
+            <div class="card-image">
+                @if (Model.Image != "Empty")
+                {
+                    <img src="@Url.Content("~/Content/ArticlImages/" + Model.Id + "/" + Model.Image)" alt="SRC">
+                }
+                @if (Model.Editable)
+                {
+                    <a class="btn" style="margin-top:15px;margin-left:15px" href="@Url.Action("EditArticle", new {Url = Model.Url, Id = Model.Id })"><i class="material-icons">edit</i></a>
+                    <a class="btn" style="margin-top:15px;margin-left:15px"><i class="material-icons" href="@Url.Action("Delete", new {Url = Model.Url, Id = Model.Id })">delete</i></a>
+                }
+            </div>
+            <div class="card-content">
+                <span class="card-title">@Model.Title</span>
+                <br />
+                <div class="divider"></div>
+                <br />
+                <p>@Html.Raw(Model.FullDescription)</p><br />
+                <div class="divider"></div><br />
+                @TagListHelper.DisabledModelTagsList(Model.ArticleTags)
+                <div class="divider"></div><br />
+                @if (Model.UpdateDate != null)
+                {
+                    <p>@Model.UpdateDate</p>
+                }
+                else
+                {
+                    <p>@Model.CreateDate</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="commentsBlock">
+    <div id="comments" class="comments white z-depth-1" style="padding:20px;">
+        <div id="loader" class="hidden"></div>
+    </div>
+    @if (User.Identity.IsAuthenticated)
+    {
+        <div class="sendBlock hidden white z-depth-1" id="sendBlock" style="margin:20px 0; padding:20px">
+            <textarea name="message" id="message"></textarea>
+            <input type="button" class="waves-effect waves-light btn" value="Send" id="send" />
+        </div>
+    }
+</div>
+
+@section scripts {
+    <script type="text/javascript">
+        var myId = @Model.UserId;
+        var MaxCommentLength = @ViewBag.MaxCommentLength;
+        var commentBlockLoaded = false;
+        $(document).ready(function ()
+        {
+            setTimeout(function() {
+                if (connected && !commentBlockLoaded &&($("body").height() >= $(window).height() || $(window).scrollTop() >= $(document).height() - $(window).height()))
+                {
+                    LoadComments();
+                }
+            }, 500);
+
+            $(window).scroll(function()
+            {
+                if(connected && !commentBlockLoaded && $(window).scrollTop() >= $(document).height() - $(window).height())
+                {
+                    LoadComments();
+                }
+            });
+
+        });
+
+       
+
+        function LoadComments()
+        {
+            $.ajax({
+                url: '/News/GetComments',
+                //              timeout: 3000,
+                method: 'POST',
+                dataType: 'Json',
+                async: true,
+                data: { "articleId": @Model.Id },
+                beforeSend: function() {
+                    commentBlockLoaded = true;
+                    $('#loader').removeClass("hidden");
+                    hub.server.connect(@Model.Id);
+                }
+            }).done(function(data) {
+                console.log(data);
+                if (data.length > 0)
+                {
+
+                    $.each(data, function(index, data) {
+
+
+                        //  id, userId, name, message, date, reply
+                        var templ = TemplateReplace(data.Id, data.UserId, data.UserName, data.Text, data.Created.replace('T',' '));
+                        if(data.Depth == 0)
+                        {
+                            $('#comments').append(templ);
+                        }
+                        else
+                        {
+                            $('#comment-' + data.ReplyCommentId).append(templ);
+                        }
+
+                        if(data.Deleted)
+                        {
+                            $('#buttons-' + data.Id).addClass('hidden');
+                            $('#text-' + data.Id).text('Comment has been deleted');
+                        }
+
+                        LoadButtons(data.Id, data.UserId);
+
+                    });
+                }
+
+                $('#send').on("click", function() {
+                    hub.server.send(@Model.Id, 0, $('#message').val());
+                    $('#message').val('');
+                });
+                $('#message').on("click", function () {
+                    $('.sendBlock.act').addClass('hidden').removeClass('act');
+                    $('.showSendBlock.hidden').removeClass('hidden');
+                })
+                $('#loader').addClass("hidden");
+                $('#sendBlock').removeClass("hidden");
+                // $('#sendBlock').addClass("act");
+            });
+        }
+
+        hub.client.addMessage = function (id, userId, name, message, date, reply) {
+            var templ = TemplateReplace(id, userId, name, message, date);
+            if(reply == 0)
+            {
+                $('#comments').append(templ);
+            }
+            else
+            {
+                $('#comment-' + reply).append(templ);
+            }
+            LoadButtons(id, userId);
+        }
+
+        hub.client.edit = function(commentId, text, date)
+        {
+            $('#text-' + commentId).text(text);
+            $('#commentDate-' + commentId).text(date);
+        }
+
+        hub.client.delete = function(commentId)
+        {
+            $('#text-' + commentId).text('Comment has been deleted');
+            $('#commentName-' + commentId).text('');
+            $('#buttons-' + commentId).addClass('hidden');
+            $('#comment-' + commentId).addClass('deleted');
+        }
+
+        function ValidateComment(text)
+        {
+            text = text.trim();
+            if(text.length > MaxCommentLength || text.length ==0)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        function TemplateReplace(id, userId, name, message, date, reply)
+        {
+            var templ = $("#template").html();
+            templ = templ.split('[Id]').join(id);
+            templ = templ.replace('[uId]', userId);
+            templ = templ.replace('[Name]', htmlEncode(name));
+            templ = templ.replace('[Text]', htmlEncode(message));
+            templ = templ.replace('[Date]', date.replace('T',' '));
+            if(userId == myId)
+            {
+                templ = templ.split('[Class]').join('commentsBtn');
+            }
+            else
+            {
+                templ = templ.split('[Class]').join('hidden');
+            }
+            return templ;
+        }
+
+        function htmlEncode(value) {
+            var encodedValue = $('<div />').text(value).html();
+            return encodedValue;
+        }
+
+        function ResetDefaults() {
+
+            $('.editor.act').addClass('hidden').removeClass('act');
+            $('.saveButton.act').addClass('hidden').removeClass('act');
+            $('.commentContent.hidden').removeClass('hidden');
+            $('.showSendBlock.hidden').removeClass('hidden');
+            $('.sendBlock.act').addClass('hidden').removeClass('act');
+            $('.editButton.hidden.dis').removeClass('hidden').removeClass('dis');
+            $('.deleteButton.hidden.dis').removeClass('hidden').removeClass('dis');
+            $('.sendBlock.act').addClass('hidden').removeClass('act');
+            $('.showSendBlock.hidden').removeClass('hidden');
+        }
+
+        function LoadButtons(id, userId) {
+            $('#' + id).on("click", function ()
+            {
+                ResetDefaults();
+
+                var replyBtnId = $(this).attr('id');
+                var sendBlock = $('.sendBlock.act');
+                sendBlock.addClass('hidden');
+                sendBlock.removeClass('act');
+                $('#sendBlock-' + replyBtnId).addClass('act').removeClass('hidden');
+                $('.showSendBlock.hidden').removeClass('hidden');
+                $('#' + replyBtnId).addClass('hidden');
+            });
+
+
+            $('#send-' + id).on("click", function() {
+                var id = $(this).attr('id');
+                id = id.replace('send-','');
+                var textArea = $('#message-' + id);
+                var text = textArea.val().trim();
+                if(ValidateComment(text))
+                {
+                    hub.server.send(@Model.Id, id, textArea.val());
+                    $(textArea).val('');
+                    ResetDefaults();
+                }
+                else
+                {
+                    Materialize.toast('Invalid input', 2000, 'red');
+                }
+            });
+
+            if(userId == myId)
+            {
+                $('#editBtn-' + id).on("click", function()
+                {
+                    ResetDefaults();
+
+
+                    $(this).addClass('hidden').addClass('dis');
+
+
+                    $('#deleteBtn-' + id).addClass('hidden').addClass('dis');
+
+                    $('#' + id).addClass('hidden').addClass('dis');
+
+                    var text =  $('#text-' + id).addClass('hidden').text();
+
+                    var edit = $('#edit-' + id);
+                    $(edit).text(text);
+                    $(edit).removeClass('hidden').addClass('act');
+                    $('#SaveBtn-' + id).removeClass('hidden').addClass('act');
+
+
+                });
+
+                $('#SaveBtn-' + id).on("click", function () {
+                    var value = $('#edit-' + id).text();
+                    if(ValidateComment(value))
+                    {
+                        hub.server.edit(id, value);
+                        ResetDefaults();
+                    }
+                    else
+                    {
+                        Materialize.toast('Invalid input', 2000, 'red');
+                    }
+                });
+
+                $('#deleteBtn-' + id).on("click", function () {
+                    ResetDefaults();
+                    hub.server.delete(id);
+                });
+            }
+        }
+    </script>
+    <script type="text/template" id="template">
+        <div class="comment" id="comment-[Id]" userid="[uId]" style="padding-left:40px;">
+            <p class="commentName" id="commentName-[Id]">[Name]</p>
+            <p class="commentDate blue-grey-text" id="commentDate-[Id]" style="margin-bottom:10px;">[Date]</p>
+            <p class="commentText commentContent" id="text-[Id]">[Text]</p>
+            <p class="commentText editor hidden" id="edit-[Id]" contenteditable="true"></p>
+            @if (Model.UserId > 0)
+            {
+                <div id="buttons-[Id]" class="">
+                    <input type="button" value="Reply" class="showSendBlock commentsBtn aves-effect waves-light btn" id="[Id]" />
+                    <input type="button" value="Edit" class="commentsBtn aves-effect waves-light btn [Class] editButton" id="editBtn-[Id]" />
+                    <input type="button" value="Save" class="commentsBtn aves-effect waves-light btn commentsBtn saveButton hidden" id="SaveBtn-[Id]" />
+                    <input type="button" value="Delete" class="commentsBtn aves-effect waves-light btn [Class] deleteButton" id="deleteBtn-[Id]" />
+                    <div class="sendBlock hidden" id="sendBlock-[Id]">
+                        <textarea name="message" id="message-[Id]"></textarea>
+                        <input type="button" class="replyBtn commentsBtn waves-effect waves-light btn" value="Send" id="send-[Id]" />
+                    </div>
+                </div>
+            }
+            <div class="divider" style="margin:10px 0"></div>
+        </div>
+    </script>
+
+    <script>
+        $('select').select2({
+            tags:true
+        });
+    </script>
+}

@@ -1,0 +1,71 @@
+﻿
+@model NewsWebSite.Models.ViewModel.RegisterViewModel
+
+@{
+    Layout = "~/Views/Shared/Lay.cshtml";
+    ViewBag.Title = "Register";
+}
+<div class="row " style="margin:10px 0;padding:20px;">
+    @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "col l6 m10 s12 white z-depth-1 offset-l3 offset-m1", enctype = "multipart/form-data", role = "form", style = "padding:30px;" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="row">
+            <div class="input-field col s12">
+                @Html.LabelFor(m => m.Email, new { @class = "label-text" })
+                @Html.TextBoxFor(m => m.Email)
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s12">
+                @Html.LabelFor(m => m.Password, new { @class = "label-text" })
+                @Html.PasswordFor(m => m.Password)
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s12">
+                @Html.LabelFor(m => m.ConfirmPassword, new { @class = "label-text" })
+                @Html.PasswordFor(m => m.ConfirmPassword)
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s12">
+                <img src="" style="max-height:200px;" id="img-preview" />
+                <p>Изображение</p>
+                @Html.TextBoxFor(model => model.Image, new { type = "file", accept = "image/jpeg,image/png,.jpg,.png", id = "files" })
+                @Html.ValidationMessageFor(model => model.Image)
+            </div>
+        </div>
+        @Html.ValidationSummary("", new { @class = "red-text" })
+        <div class="row">
+            <div class="input-field col s12">
+                <input type="submit" class="waves-effect waves-light btn" value="Зарегистрироваться" />
+                <div class="divider" style="margin:15px 0;"></div>
+                @Html.ActionLink("Уже есть аккаунт?", "LogIn")<br />
+                <a href="@Url.Action("Index", "News")">На главную</a><br />
+            </div>
+        </div>
+    }
+</div>
+@section Scripts {
+    <script type="text/javascript">
+    function showFile(e) {
+        var files = e.target.files;
+        for (var i = 0, f; f = files[i]; i++) {
+            if (!f.type.match('image/*')) continue;
+            var fr = new FileReader();
+            fr.onload = (function (theFile) {
+                return function (e) {
+                    document.getElementById('img-preview').src=e.target.result;
+                };
+            })(f);
+
+            fr.readAsDataURL(f);
+        }
+    }
+
+    document.getElementById('files').addEventListener('change', showFile, false);
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jquery")
+}
