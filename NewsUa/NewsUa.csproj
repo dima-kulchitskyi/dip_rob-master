@@ -464,10 +464,10 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\icon.css" />
     <Content Include="Content\Images\news-vector.png" />
+    <Content Include="Content\UserImages\profile.png" />
     <Content Include="Content\scroll.css" />
     <Content Include="Content\select2.min.css" />
     <Content Include="Content\selectStyle.css" />
-    <Content Include="Content\UserImages\profile.png" />
     <Content Include="Content\Images\search_img.png" />
     <Content Include="Content\Images\tiDNCMp.png" />
     <Content Include="Content\main_adaptive.css" />
@@ -503,6 +503,7 @@
     <Content Include="ckeditor\samples\toolbarconfigurator\lib\codemirror\LICENSE" />
     <Content Include="ckeditor\skins\moono-lisa\readme.md" />
     <None Include="Properties\PublishProfiles\newssite - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\newsua - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\newswebsitet3 - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\formPost.js" />
