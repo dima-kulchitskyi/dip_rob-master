@@ -122,9 +122,6 @@ namespace NewsUa.Controllers
             var viewArticle = new ArticleForView(article);
 
            
-
-          
-
             if (User.Identity.IsAuthenticated)
             {
                 if (commentId >= 0)

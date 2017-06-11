@@ -12,11 +12,6 @@ namespace NewsUa
         public static void RegisterRoutes(RouteCollection routes)
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
-            routes.MapRoute(
-               name: "WithTitle",
-               url: "{controller}/{id}/{title}",
-               defaults: new { controller = "News", action = "Article", title = UrlParameter.Optional }
-           );
 
             routes.MapRoute(
                 name: "Default",
