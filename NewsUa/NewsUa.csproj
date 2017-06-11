@@ -464,10 +464,10 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\icon.css" />
     <Content Include="Content\Images\news-vector.png" />
+    <Content Include="Content\UserImages\profile.png" />
     <Content Include="Content\scroll.css" />
     <Content Include="Content\select2.min.css" />
     <Content Include="Content\selectStyle.css" />
-    <Content Include="Content\UserImages\profile.png" />
     <Content Include="Content\Images\search_img.png" />
     <Content Include="Content\Images\tiDNCMp.png" />
     <Content Include="Content\main_adaptive.css" />
